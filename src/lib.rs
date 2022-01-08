@@ -15,6 +15,7 @@ const BLOCK_LIGHT: char = '\u{2591}';
 const BLOCK_MEDIUM: char = '\u{2592}';
 const BLOCK_DARK: char = '\u{2593}';
 const BLOCK_FULL: char = '\u{2588}';
+const BLOCK_HALF: char = '\u{2580}';
 
 /// A tui-rs Widget which displays an image.
 pub struct Image<'a> {
@@ -131,11 +132,15 @@ impl<'a> Image<'a> {
                         });
                     }
                     ColorMode::Rgb => {
-                        cell.set_char(BLOCK_FULL).set_fg(Color::Rgb(
+                        let p_lower = img.get_pixel((x - ox) as u32, 2 * (y - oy) as u32 + 1);
+                        cell.set_char(BLOCK_HALF).set_fg(Color::Rgb(
                             (255.0 * r) as u8,
                             (255.0 * g) as u8,
                             (255.0 * b) as u8,
-                        ));
+                        )).set_bg(Color::Rgb(
+                            p_lower.data[0],
+                            p_lower.data[1],
+                            p_lower.data[2]));
                     }
                 }
             }
