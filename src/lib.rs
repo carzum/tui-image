@@ -1,5 +1,5 @@
 use failure::Error;
-use image::{imageops::resize, FilterType, RgbaImage};
+use image::{imageops::resize, imageops::FilterType::Nearest ,RgbaImage};
 use std::cmp::{min, max};
 use tui::buffer::Buffer;
 use tui::layout::{Alignment, Rect};
@@ -109,10 +109,10 @@ impl<'a> Image<'a> {
                 let p = img.get_pixel((x - ox) as u32, 2 * (y - oy) as u32);
 
                 // composite onto background
-                let a = p.data[3] as f32 / 255.0;
-                let r = p.data[0] as f32 * a / 255.0 + bg_rgb[0] * (1f32 - a);
-                let g = p.data[1] as f32 * a / 255.0 + bg_rgb[1] * (1f32 - a);
-                let b = p.data[2] as f32 * a / 255.0 + bg_rgb[2] * (1f32 - a);
+                let a = p[3] as f32 / 255.0;
+                let r = p[0] as f32 * a / 255.0 + bg_rgb[0] * (1f32 - a);
+                let g = p[1] as f32 * a / 255.0 + bg_rgb[1] * (1f32 - a);
+                let b = p[2] as f32 * a / 255.0 + bg_rgb[2] * (1f32 - a);
 
                 let cell = buf.get_mut(area.left() + x, area.top() + y);
 
@@ -138,9 +138,9 @@ impl<'a> Image<'a> {
                             (255.0 * g) as u8,
                             (255.0 * b) as u8,
                         )).set_bg(Color::Rgb(
-                            p_lower.data[0],
-                            p_lower.data[1],
-                            p_lower.data[2]));
+                            p_lower[0],
+                            p_lower[1],
+                            p_lower[2]));
                     }
                 }
             }
@@ -170,7 +170,7 @@ impl<'a> Widget for Image<'a> {
                     img,
                     area.width as u32,
                     2 * area.height as u32,
-                    FilterType::Nearest,
+                    Nearest,
                 );
                 self.draw_img(area, buf, &scaled)
             } else {
