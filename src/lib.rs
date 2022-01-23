@@ -87,9 +87,9 @@ impl<'a> Image<'a> {
     fn draw_img(&self, area: Rect, buf: &mut Buffer, img: &RgbaImage) {
         // TODO: add other fixed colours
         let bg_rgb = match self.style.bg {
-            Color::Black => vec![0f32, 0f32, 0f32],
-            Color::White => vec![1f32, 1f32, 1f32],
-            Color::Rgb(r, g, b) => vec![r as f32 / 255f32, g as f32 / 255f32, b as f32 / 255f32],
+            Some(Color::Black) => vec![0f32, 0f32, 0f32],
+            Some(Color::White) => vec![1f32, 1f32, 1f32],
+            Some(Color::Rgb(r, g, b)) => vec![r as f32 / 255f32, g as f32 / 255f32, b as f32 / 255f32],
             _ => vec![0f32, 0f32, 0f32],
         };
 
@@ -149,10 +149,9 @@ impl<'a> Image<'a> {
 }
 
 impl<'a> Widget for Image<'a> {
-    fn draw(&mut self, area: Rect, buf: &mut Buffer) {
+    fn render(mut self, area: Rect, buf: &mut Buffer) {
         let area = match self.block {
             Some(ref mut b) => {
-                b.draw(area, buf);
                 b.inner(area)
             }
             None => area,
@@ -162,7 +161,7 @@ impl<'a> Widget for Image<'a> {
             return;
         }
 
-        self.background(area, buf, self.style.bg);
+        buf.set_style(area, self.style);
 
         if let Some(ref img) = self.img {
             if img.width() > area.width as u32 || img.height() / 2 > area.height as u32 {
